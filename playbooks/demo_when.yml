@@ -1,0 +1,10 @@
+---
+- hosts: "{{ hosts }}"
+  tasks:
+  -  name: creamos directory
+     win_file:
+       path: c:\temp\test
+       state: directory
+     when: ansible_hostname == "windows02"
+  
+    

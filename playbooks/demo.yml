@@ -1,0 +1,34 @@
+---
+- hosts : "{{ hosts }}"
+  tasks:
+    - name: Instalacion del IIS  
+      ansible.windows.win_feature:
+        name: Web-Server
+        state: present
+    - name: Creamos docroot
+      ansible.windows.win_file:
+        path: C:\sites\acme
+        state: directory
+    - name: Creamos IIS site
+      community.windows.win_iis_website:
+        name: IIS_SITE_DESDE_ANSIBLE
+        state: started
+        port: 80
+        ip: 192.168.17.202
+        hostname: windows02
+        application_pool: acme
+        physical_path: C:\sites\acme
+        parameters: logfile.directory:C:\sites\logs
+        register: website
+    - name: Crea index.html
+      ansible.windows.win_file:
+        path: C:\sites\acme\index.html
+        state: touch
+    - name: insertamos linea en index html
+      community.windows.win_lineinfile:
+        path: C:\sites\acme\index.html
+        line: "Hola Mundo desde IIS"
+    - name: Iniciamos  IIS site
+      win_iis_website:
+        name: IIS_SITE_DESDE_ANSIBLE
+        state: started
